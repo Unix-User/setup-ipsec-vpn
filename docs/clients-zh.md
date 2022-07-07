@@ -16,7 +16,11 @@
   * [Linux](#linux)
 * [故障排除](#故障排除)
 
-如果你喜欢这个项目，可以[表达你的支持或感谢](https://coindrop.to/hwdsl2)。
+> 如果你喜欢这个项目，可以表达你的支持\*或感谢。
+>
+> <a href="https://ko-fi.com/hwdsl2" target="_blank"><img height="36" width="187" src="images/kofi2.png" border="0" alt="Buy Me a Coffee at ko-fi.com" /></a> &nbsp;<a href="https://coindrop.to/hwdsl2" target="_blank"><img src="images/embed-button.png" height="36" width="145" border="0" alt="Coindrop.to me" /></a>
+>
+> \* 访问仅限支持者的内容。
 
 ## Windows
 
@@ -73,7 +77,9 @@
 # 不保存命令行历史记录
 Set-PSReadlineOption –HistorySaveStyle SaveNothing
 # 创建 VPN 连接
-Add-VpnConnection -Name 'My IPsec VPN' -ServerAddress '你的 VPN 服务器 IP' -L2tpPsk '你的 VPN IPsec PSK' -TunnelType L2tp -EncryptionLevel Required -AuthenticationMethod Chap,MSChapv2 -Force -RememberCredential -PassThru
+Add-VpnConnection -Name 'My IPsec VPN' -ServerAddress '你的 VPN 服务器 IP' ^
+  -L2tpPsk '你的 VPN IPsec PSK' -TunnelType L2tp -EncryptionLevel Required ^
+  -AuthenticationMethod Chap,MSChapv2 -Force -RememberCredential -PassThru
 # 忽略 data encryption 警告（数据在 IPsec 隧道中已被加密）
 ```
 

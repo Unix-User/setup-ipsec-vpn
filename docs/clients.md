@@ -16,7 +16,11 @@ After [setting up your own VPN server](https://github.com/hwdsl2/setup-ipsec-vpn
   * [Linux](#linux)
 * [Troubleshooting](#troubleshooting)
 
-Like this project? You can [show your support or appreciation](https://coindrop.to/hwdsl2).
+> Like this project? You can show your support\* or appreciation.
+>
+> <a href="https://ko-fi.com/hwdsl2" target="_blank"><img height="36" width="187" src="images/kofi2.png" border="0" alt="Buy Me a Coffee at ko-fi.com" /></a> &nbsp;<a href="https://coindrop.to/hwdsl2" target="_blank"><img src="images/embed-button.png" height="36" width="145" border="0" alt="Coindrop.to me" /></a>
+>
+> \* Get access to supporter-only content.
 
 ## Windows
 
@@ -73,7 +77,9 @@ Alternatively, instead of following the steps above, you may create the VPN conn
 # Disable persistent command history
 Set-PSReadlineOption –HistorySaveStyle SaveNothing
 # Create VPN connection
-Add-VpnConnection -Name 'My IPsec VPN' -ServerAddress 'Your VPN Server IP' -L2tpPsk 'Your VPN IPsec PSK' -TunnelType L2tp -EncryptionLevel Required -AuthenticationMethod Chap,MSChapv2 -Force -RememberCredential -PassThru
+Add-VpnConnection -Name 'My IPsec VPN' -ServerAddress 'Your VPN Server IP' ^
+  -L2tpPsk 'Your VPN IPsec PSK' -TunnelType L2tp -EncryptionLevel Required ^
+  -AuthenticationMethod Chap,MSChapv2 -Force -RememberCredential -PassThru
 # Ignore the data encryption warning (data is encrypted in the IPsec tunnel)
 ```
 

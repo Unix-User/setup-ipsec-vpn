@@ -35,7 +35,11 @@ Libreswan 支持通过使用 RSA 签名算法的 X.509 Machine Certificates 来�
 * [Linux](#linux)
 * [Mikrotik RouterOS](#routeros)
 
-如果你喜欢这个项目，可以[表达你的支持或感谢](https://coindrop.to/hwdsl2)。
+> 如果你喜欢这个项目，可以表达你的支持\*或感谢。
+>
+> <a href="https://ko-fi.com/hwdsl2" target="_blank"><img height="36" width="187" src="images/kofi2.png" border="0" alt="Buy Me a Coffee at ko-fi.com" /></a> &nbsp;<a href="https://coindrop.to/hwdsl2" target="_blank"><img src="images/embed-button.png" height="36" width="145" border="0" alt="Coindrop.to me" /></a>
+>
+> \* 访问仅限支持者的内容。
 
 ### Windows 7, 8, 10 和 11
 
@@ -75,9 +79,14 @@ Libreswan 支持通过使用 RSA 签名算法的 X.509 Machine Certificates 来�
 
    ```console
    # 创建 VPN 连接（将服务器地址换成你自己的值）
-   powershell -command "Add-VpnConnection -ServerAddress '你的 VPN 服务器 IP（或者域名）' -Name 'My IKEv2 VPN' -TunnelType IKEv2 -AuthenticationMethod MachineCertificate -EncryptionLevel Required -PassThru"
+   powershell -command "Add-VpnConnection -ServerAddress '你的 VPN 服务器 IP（或者域名）' ^
+     -Name 'My IKEv2 VPN' -TunnelType IKEv2 -AuthenticationMethod MachineCertificate ^
+     -EncryptionLevel Required -PassThru"
    # 设置 IPsec 参数
-   powershell -command "Set-VpnConnectionIPsecConfiguration -ConnectionName 'My IKEv2 VPN' -AuthenticationTransformConstants GCMAES128 -CipherTransformConstants GCMAES128 -EncryptionMethod AES256 -IntegrityCheckMethod SHA256 -PfsGroup None -DHGroup Group14 -PassThru -Force"
+   powershell -command "Set-VpnConnectionIPsecConfiguration -ConnectionName 'My IKEv2 VPN' ^
+     -AuthenticationTransformConstants GCMAES128 -CipherTransformConstants GCMAES128 ^
+     -EncryptionMethod AES256 -IntegrityCheckMethod SHA256 -PfsGroup None ^
+     -DHGroup Group14 -PassThru -Force"
    ```
 
    **Windows 7** 不支持这些命令，你可以 [手动创建 VPN 连接](https://wiki.strongswan.org/projects/strongswan/wiki/Win7Config)。
@@ -364,7 +373,7 @@ sudo chmod 600 ikev2vpnca.cer vpnclient.cer vpnclient.key
 
 ### RouterOS
 
-**注：** 这些步骤由 [@Unix-User](https://github.com/Unix-User) 提供。
+**注：** 这些步骤由 [@Unix-User](https://github.com/Unix-User) 提供。建议通过 SSH 连接运行终端命令，例如通过 Putty。
 
 1. 将生成的 `.p12` 文件安全地传送到你的计算机。
 
@@ -386,6 +395,29 @@ sudo chmod 600 ikev2vpnca.cer vpnclient.cer vpnclient.key
    ![routeros import certificate](images/routeros-import-cert.gif)
    </details>
 
+   或者，你也可以使用终端命令 (empty passphrase):
+
+   ```bash
+   [admin@MikroTik] > /certificate/import file-name=mikrotik.p12
+   passphrase:
+
+     certificates-imported: 2
+     private-keys-imported: 0
+            files-imported: 1
+       decryption-failures: 0
+     keys-with-no-certificate: 0
+
+   [admin@MikroTik] > /certificate/import file-name=mikrotik.p12
+   passphrase:
+
+        certificates-imported: 0
+        private-keys-imported: 1
+               files-imported: 1
+          decryption-failures: 0
+     keys-with-no-certificate: 0
+
+   ```
+
 3. 在 terminal 中运行以下命令。将以下内容替换为你自己的值。
 `YOUR_VPN_SERVER_IP_OR_DNS_NAME` 是你的 VPN 服务器 IP 或域名。
 `IMPORTED_CERTIFICATE` 是上面第 2 步中的证书名称，例如 `vpnclient.p12_0`
@@ -395,23 +427,17 @@ sudo chmod 600 ikev2vpnca.cer vpnclient.cer vpnclient.key
 来指定整个网络，或者使用 `192.168.0.10` 来指定仅用于一个设备，依此类推。
 
    ```bash
-   /ip firewall address-list
-   add address=THESE_ADDRESSES_GO_THROUGH_VPN list=local
-   /ip ipsec mode-config
-   add name=ike2-rw responder=no src-address-list=local
-   /ip ipsec policy group
-   add name=ike2-rw
-   /ip ipsec profile
-   add name=ike2-rw
-   /ip ipsec peer
-   add address=YOUR_VPN_SERVER_IP_OR_DNS_NAME exchange-mode=ike2 name=ike2-rw-client profile=ike2-rw
-   /ip ipsec proposal
-   add name=ike2-rw pfs-group=none
-   /ip ipsec identity
-   add auth-method=digital-signature certificate=IMPORTED_CERTIFICATE generate-policy=port-strict mode-config=ike2-rw \
+   /ip firewall address-list add address=THESE_ADDRESSES_GO_THROUGH_VPN list=local
+   /ip ipsec mode-config add name=ike2-rw responder=no src-address-list=local
+   /ip ipsec policy group add name=ike2-rw
+   /ip ipsec profile add name=ike2-rw
+   /ip ipsec peer add address=YOUR_VPN_SERVER_IP_OR_DNS_NAME exchange-mode=ike2 \
+       name=ike2-rw-client profile=ike2-rw
+   /ip ipsec proposal add name=ike2-rw pfs-group=none
+   /ip ipsec identity add auth-method=digital-signature certificate=IMPORTED_CERTIFICATE \
+       generate-policy=port-strict mode-config=ike2-rw \
        peer=ike2-rw-client policy-template-group=ike2-rw
-   /ip ipsec policy
-   add group=ike2-rw proposal=ike2-rw template=yes
+   /ip ipsec policy add group=ike2-rw proposal=ike2-rw template=yes
    ```
 4. 更多信息请参见 [#1112](https://github.com/hwdsl2/setup-ipsec-vpn/issues/1112#issuecomment-1059628623)。
 

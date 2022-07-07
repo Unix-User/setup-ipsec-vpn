@@ -35,7 +35,11 @@ By default, IKEv2 is automatically set up when running the VPN setup script. If 
 * [Linux](#linux)
 * [Mikrotik RouterOS](#routeros)
 
-Like this project? You can [show your support or appreciation](https://coindrop.to/hwdsl2).
+> Like this project? You can show your support\* or appreciation.
+>
+> <a href="https://ko-fi.com/hwdsl2" target="_blank"><img height="36" width="187" src="images/kofi2.png" border="0" alt="Buy Me a Coffee at ko-fi.com" /></a> &nbsp;<a href="https://coindrop.to/hwdsl2" target="_blank"><img src="images/embed-button.png" height="36" width="145" border="0" alt="Coindrop.to me" /></a>
+>
+> \* Get access to supporter-only content.
 
 ### Windows 7, 8, 10 and 11
 
@@ -75,9 +79,14 @@ Alternatively, **Windows 7, 8, 10 and 11** users can manually import IKEv2 confi
 
    ```console
    # Create VPN connection (replace server address with your own value)
-   powershell -command "Add-VpnConnection -ServerAddress 'Your VPN Server IP (or DNS name)' -Name 'My IKEv2 VPN' -TunnelType IKEv2 -AuthenticationMethod MachineCertificate -EncryptionLevel Required -PassThru"
+   powershell -command "Add-VpnConnection -ServerAddress 'Your VPN Server IP (or DNS name)' ^
+     -Name 'My IKEv2 VPN' -TunnelType IKEv2 -AuthenticationMethod MachineCertificate ^
+     -EncryptionLevel Required -PassThru"
    # Set IPsec configuration
-   powershell -command "Set-VpnConnectionIPsecConfiguration -ConnectionName 'My IKEv2 VPN' -AuthenticationTransformConstants GCMAES128 -CipherTransformConstants GCMAES128 -EncryptionMethod AES256 -IntegrityCheckMethod SHA256 -PfsGroup None -DHGroup Group14 -PassThru -Force"
+   powershell -command "Set-VpnConnectionIPsecConfiguration -ConnectionName 'My IKEv2 VPN' ^
+     -AuthenticationTransformConstants GCMAES128 -CipherTransformConstants GCMAES128 ^
+     -EncryptionMethod AES256 -IntegrityCheckMethod SHA256 -PfsGroup None ^
+     -DHGroup Group14 -PassThru -Force"
    ```
 
    **Windows 7** does not support these commands, you can [manually create the VPN connection](https://wiki.strongswan.org/projects/strongswan/wiki/Win7Config).
@@ -366,9 +375,7 @@ If you get an error when trying to connect, see [Troubleshooting](#troubleshooti
 
 ### RouterOS
 
-**Note:** These steps were contributed by [@Unix-User](https://github.com/Unix-User).
-
-It is recommended to use terminal command via SSH connection, eg via Putty.
+**Note:** These steps were contributed by [@Unix-User](https://github.com/Unix-User). It is recommended to run terminal commands via an SSH connection, e.g. via Putty.
 
 1. Securely transfer the generated `.p12` file to your computer.
 
@@ -382,11 +389,20 @@ It is recommended to use terminal command via SSH connection, eg via Putty.
 
 2. In WinBox, go to System > certificates > import. Import the `.p12` certificate file twice (yes, import the same file two times!). Verify in your certificates panel. You will see 2 files, the one that is marked KT is the key.
 
+   <details>
+   <summary>
+   Click to see screencast.
+   </summary>
+
+   ![routeros import certificate](images/routeros-import-cert.gif)
+   </details>
+
    Or you can use terminal instead (empty passphrase):
+
    ```bash
    [admin@MikroTik] > /certificate/import file-name=mikrotik.p12
    passphrase:
-   
+
      certificates-imported: 2
      private-keys-imported: 0
             files-imported: 1
@@ -395,7 +411,7 @@ It is recommended to use terminal command via SSH connection, eg via Putty.
 
    [admin@MikroTik] > /certificate/import file-name=mikrotik.p12
    passphrase:
-   
+
         certificates-imported: 0
         private-keys-imported: 1
                files-imported: 1
@@ -403,15 +419,6 @@ It is recommended to use terminal command via SSH connection, eg via Putty.
      keys-with-no-certificate: 0
 
    ```
-   
-
-   <details>
-   <summary>
-   Click to see screencast.
-   </summary>
-
-   ![routeros import certificate](images/routeros-import-cert.gif)
-   </details>
 
 3. Run these commands in terminal. Replace the following with your own values.
 `YOUR_VPN_SERVER_IP_OR_DNS_NAME` is your VPN server IP or DNS name.
@@ -426,9 +433,11 @@ for the entire network, or use `192.168.0.10` for just one device, and so on.
    /ip ipsec mode-config add name=ike2-rw responder=no src-address-list=local
    /ip ipsec policy group add name=ike2-rw
    /ip ipsec profile add name=ike2-rw
-   /ip ipsec peer add address=YOUR_VPN_SERVER_IP_OR_DNS_NAME exchange-mode=ike2 name=ike2-rw-client profile=ike2-rw
+   /ip ipsec peer add address=YOUR_VPN_SERVER_IP_OR_DNS_NAME exchange-mode=ike2 \
+       name=ike2-rw-client profile=ike2-rw
    /ip ipsec proposal add name=ike2-rw pfs-group=none
-   /ip ipsec identity add auth-method=digital-signature certificate=IMPORTED_CERTIFICATE generate-policy=port-strict mode-config=ike2-rw \
+   /ip ipsec identity add auth-method=digital-signature certificate=IMPORTED_CERTIFICATE \
+       generate-policy=port-strict mode-config=ike2-rw \
        peer=ike2-rw-client policy-template-group=ike2-rw
    /ip ipsec policy add group=ike2-rw proposal=ike2-rw template=yes
    ```
